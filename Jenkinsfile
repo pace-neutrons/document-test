@@ -35,8 +35,9 @@ pipeline {
                 withCredentials([string(credentialsId: 'GitHub_API_Token', 
                             variable: 'api_token')]) {
                     bat '''
-                        git add docs
+						git add docs
                         git commit -m "CI documents build"
+                        git remote set-url origin https://pace-builder:%GitHub_API_Token%@github.com/pace-neutrons/document-test.git
                         git push origin master
                     '''
                 }
