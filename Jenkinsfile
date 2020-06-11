@@ -7,10 +7,14 @@ pipeline {
     stages {
         stage('Checkout') { 
             steps {
-                bat '''
-                    git clone https://github.com/pace-neutrons/document-test . &
-                    git checkout %BRANCH_NAME%
-                '''
+                withCredentials([string(credentialsId: 'GitHub_API_Token', 
+                            variable: 'api_token')]) {
+                    bat '''
+                        git config --local user.name "PACE CI Build Agent"
+                        git clone https://pace-builder:%api_token%@github.com/pace-neutrons/document-test . &
+                        git checkout %BRANCH_NAME%
+                    '''
+                }
             }
         }
         stage('Prepare') {
@@ -31,17 +35,12 @@ pipeline {
             }
         }
         stage('Deploy') { 
-            steps {    
-                withCredentials([string(credentialsId: 'GitHub_API_Token', 
-                            variable: 'api_token')]) {
-                    bat '''
-                        git add docs
-                        git commit -m "Document build from CI"
-                        git config --local user.name "PACE CI Build Agent"
-                        git remote set-url origin https://pace-builder:%api_token%@github.com/pace-neutrons/document-test.git
-                        git push origin %BRANCH_NAME%
-                    '''
-                }
+            steps {
+                bat '''
+                    git add docs
+                    git commit -m "Document build from CI"
+                    git push origin %BRANCH_NAME%
+                '''
             }
         }
     }
