@@ -39,7 +39,6 @@ pipeline {
                         git commit -m "CI documents build"
                         git push origin master
                     '''
-                            }
                 }
             }
         }
