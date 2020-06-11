@@ -38,9 +38,9 @@ pipeline {
         stage('Store') {
             steps {
                 bat '''
-                    rmdir /S /Q ..\stash
-                    mkdir ..\stash &
-                    move docs\html ..\stash
+                    rmdir /S /Q ..\\stash
+                    mkdir ..\\stash &
+                    move docs\\html ..\\stash
                 '''
             }
         }
@@ -48,7 +48,7 @@ pipeline {
             steps {
                 bat '''
                     git checkout gh-pages &
-                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\stash\html . &
+                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\\stash\\html . &
                     git add * &
                     git commit -m "Document build from CI" &
                     git push origin gh-pages
