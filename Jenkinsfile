@@ -9,7 +9,7 @@ pipeline {
             steps {
                 bat '''
                     git clone https://github.com/pace-neutrons/document-test . &
-                    git checkout master
+                    git checkout %BRANCH_NAME%
                 '''
             }
         }
@@ -35,10 +35,11 @@ pipeline {
                 withCredentials([string(credentialsId: 'GitHub_API_Token', 
                             variable: 'api_token')]) {
                     bat '''
-						git add docs
-                        git commit -m "CI documents build"
+                        git add docs
+                        git commit -m "Document build from CI"
+                        git config --local user.name "PACE CI Build Agent"
                         git remote set-url origin https://pace-builder:%api_token%@github.com/pace-neutrons/document-test.git
-                        git push origin master
+                        git push origin %BRANCH_NAME%
                     '''
                 }
             }
