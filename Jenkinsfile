@@ -5,26 +5,25 @@ pipeline {
         label 'PACE Windows (Private)'
     }
     stages {
-        stage('Checkout') { 
+        stage('Checkout') {
             steps {
                 withCredentials([string(credentialsId: 'GitHub_API_Token', 
                             variable: 'api_token')]) {
                     bat '''
                         git config --local user.name "PACE CI Build Agent"
                         git clone https://pace-builder:%api_token%@github.com/pace-neutrons/document-test . &
-                        git checkout %BRANCH_NAME%
                     '''
                 }
             }
         }
-        stage('Prepare') {
+        stage ('Prepare') {
             steps {
-                bat '''
-                    git rm -r docs
-                '''
+                git checkout gh-pages
+                git rm -rf .
+                git checkout %BRANCH_NAME%
             }
         }
-        stage('Build') { 
+        stage('Build') {
             steps {
                 bat '''
                     pip install sphinx &
@@ -34,12 +33,23 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy') { 
+        stage('Store') {
             steps {
                 bat '''
-                    git add docs
+                    rmdir /S /Q ..\stash
+                    mkdir ..\stash
+                    move docs\html ..\stash
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat '''
+                    git checkout gh-pages
+                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\stash\html .
+                    git add *
                     git commit -m "Document build from CI"
-                    git push origin %BRANCH_NAME%
+                    git push origin gh-pages
                 '''
             }
         }
