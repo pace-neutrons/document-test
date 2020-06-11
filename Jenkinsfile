@@ -49,6 +49,7 @@ pipeline {
                 bat '''
                     git checkout gh-pages &
                     robocopy /E /NFL /NDL /NJS /nc /ns /np ..\\stash\\html . &
+                    type "Bypassing Jekyll on GitHub Pages" > .nojekyll &
                     git add * &
                     git commit -m "Document build from CI" &
                     git push origin gh-pages
