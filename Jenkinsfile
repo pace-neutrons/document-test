@@ -10,7 +10,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'GitHub_API_Token', 
                             variable: 'api_token')]) {
                     bat '''
-                        git config --local user.name "PACE CI Build Agent"
+                        git config --local user.name "PACE CI Build Agent" &
                         git clone https://pace-builder:%api_token%@github.com/pace-neutrons/document-test . &
                     '''
                 }
@@ -18,9 +18,11 @@ pipeline {
         }
         stage ('Prepare') {
             steps {
-                git checkout gh-pages
-                git rm -rf .
-                git checkout %BRANCH_NAME%
+                bat '''
+                    git checkout gh-pages &
+                    git rm -rf . &
+                    git checkout %BRANCH_NAME%
+                '''
             }
         }
         stage('Build') {
@@ -37,7 +39,7 @@ pipeline {
             steps {
                 bat '''
                     rmdir /S /Q ..\stash
-                    mkdir ..\stash
+                    mkdir ..\stash &
                     move docs\html ..\stash
                 '''
             }
@@ -45,10 +47,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat '''
-                    git checkout gh-pages
-                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\stash\html .
-                    git add *
-                    git commit -m "Document build from CI"
+                    git checkout gh-pages &
+                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\stash\html . &
+                    git add * &
+                    git commit -m "Document build from CI" &
                     git push origin gh-pages
                 '''
             }
