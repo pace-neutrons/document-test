@@ -50,7 +50,7 @@ pipeline {
                     git checkout gh-pages &
                     echo "Bypassing Jekyll on GitHub Pages" > .nojekyll &
                     git add .nojekyll &
-                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\\stash\\docs\html . &
+                    robocopy /E /NFL /NDL /NJS /nc /ns /np ..\\stash\\docs\\html . &
                     git add * &
                     git commit -m "Document build from CI" &
                     git push origin gh-pages
